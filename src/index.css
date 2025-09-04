@@ -8,33 +8,58 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Professional geopolitics theme */
+    --background: 218 23% 7%;
+    --foreground: 218 12% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 218 20% 10%;
+    --card-foreground: 218 12% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 218 20% 10%;
+    --popover-foreground: 218 12% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 214 89% 52%;
+    --primary-foreground: 218 23% 7%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 218 15% 20%;
+    --secondary-foreground: 218 12% 85%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 218 15% 15%;
+    --muted-foreground: 218 8% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 33 95% 54%;
+    --accent-foreground: 218 23% 7%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 218 12% 95%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 218 15% 20%;
+    --input: 218 15% 20%;
+    --ring: 214 89% 52%;
+
+    /* Data visualization colors */
+    --chart-1: 214 89% 52%;
+    --chart-2: 33 95% 54%;
+    --chart-3: 142 76% 36%;
+    --chart-4: 346 87% 43%;
+    --chart-5: 262 83% 58%;
+
+    /* CNP strength gradients */
+    --cnp-high: 142 76% 36%;
+    --cnp-medium: 33 95% 54%;
+    --cnp-low: 346 87% 43%;
+
+    /* Professional gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(214 75% 42%));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(33 85% 48%));
+    --gradient-background: linear-gradient(180deg, hsl(var(--background)), hsl(218 25% 5%));
+
+    /* Elegant shadows */
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.15);
+    --shadow-card: 0 10px 30px -10px hsl(218 50% 5% / 0.8);
+
+    /* Smooth transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --radius: 0.5rem;
 
@@ -56,33 +81,34 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Keep same dark theme for consistency */
+    --background: 218 23% 7%;
+    --foreground: 218 12% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 218 20% 10%;
+    --card-foreground: 218 12% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 218 20% 10%;
+    --popover-foreground: 218 12% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 214 89% 52%;
+    --primary-foreground: 218 23% 7%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 218 15% 20%;
+    --secondary-foreground: 218 12% 85%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 218 15% 15%;
+    --muted-foreground: 218 8% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 33 95% 54%;
+    --accent-foreground: 218 23% 7%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 218 12% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 218 15% 20%;
+    --input: 218 15% 20%;
+    --ring: 214 89% 52%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -101,5 +127,49 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    background: var(--gradient-background);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/20;
+  }
+}
+
+/* Professional animations */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: var(--shadow-glow); }
+  50% { box-shadow: 0 0 60px hsl(var(--primary) / 0.25); }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-glow {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out;
 }
