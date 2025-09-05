@@ -11,14 +11,14 @@ interface CountryCardProps {
 
 export function CountryCard({ country, showRank = true }: CountryCardProps) {
   const getCnpColor = (score: number) => {
-    if (score >= 80) return "text-cnp-high";
-    if (score >= 60) return "text-cnp-medium";
+    if (score >= 20) return "text-cnp-high";
+    if (score >= 2) return "text-cnp-medium";
     return "text-cnp-low";
   };
 
   const getCnpBadgeVariant = (score: number) => {
-    if (score >= 80) return "default";
-    if (score >= 60) return "secondary";
+    if (score >= 20) return "default";
+    if (score >= 2) return "secondary";
     return "destructive";
   };
 
@@ -104,7 +104,7 @@ export function CountryCard({ country, showRank = true }: CountryCardProps) {
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">CNP Score</span>
               <span className={`font-mono font-bold text-lg ${getCnpColor(country.cnpScore)}`}>
-                {country.cnpScore.toFixed(1)}/100
+                {country.cnpScore.toFixed(2)}
               </span>
             </div>
           </div>

@@ -1,72 +1,37 @@
-import { useState } from "react";
+import { useState, Suspense, lazy } from "react";
 import { Navigation } from "@/components/ui/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { countries, CountryData } from "@/data/countries";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from "recharts";
+import { getCountriesWithCalculatedCNP, CountryData } from "@/data/countries";
 import { ArrowRight, GitCompare } from "lucide-react";
 
+// Lazy load the charts component to reduce initial bundle size
+const ComparisonCharts = lazy(() => import("@/components/comparison-charts").then(module => ({ default: module.ComparisonCharts })));
+
+// Chart loading fallback
+const ChartLoader = () => (
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="h-96 bg-muted/30 rounded-lg flex items-center justify-center">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary mb-2"></div>
+        <p className="text-sm text-muted-foreground">Loading charts...</p>
+      </div>
+    </div>
+    <div className="h-96 bg-muted/30 rounded-lg flex items-center justify-center">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary mb-2"></div>
+        <p className="text-sm text-muted-foreground">Loading charts...</p>
+      </div>
+    </div>
+  </div>
+);
+
 export default function Compare() {
+  const countries = getCountriesWithCalculatedCNP();
   const [country1, setCountry1] = useState<CountryData | null>(null);
   const [country2, setCountry2] = useState<CountryData | null>(null);
-
-  const comparisonData = country1 && country2 ? [
-    {
-      name: "Economy",
-      [country1.name]: country1.economy.score,
-      [country2.name]: country2.economy.score,
-    },
-    {
-      name: "Military",
-      [country1.name]: country1.military.score,
-      [country2.name]: country2.military.score,
-    },
-    {
-      name: "Population",
-      [country1.name]: country1.population.score,
-      [country2.name]: country2.population.score,
-    },
-    {
-      name: "Technology",
-      [country1.name]: country1.technology.score,
-      [country2.name]: country2.technology.score,
-    },
-    {
-      name: "Resources",
-      [country1.name]: country1.resources.score,
-      [country2.name]: country2.resources.score,
-    },
-  ] : [];
-
-  const radarData = country1 && country2 ? [
-    {
-      subject: "Economy",
-      [country1.name]: country1.economy.score,
-      [country2.name]: country2.economy.score,
-    },
-    {
-      subject: "Military",
-      [country1.name]: country1.military.score,
-      [country2.name]: country2.military.score,
-    },
-    {
-      subject: "Population",
-      [country1.name]: country1.population.score,
-      [country2.name]: country2.population.score,
-    },
-    {
-      subject: "Technology",
-      [country1.name]: country1.technology.score,
-      [country2.name]: country2.technology.score,
-    },
-    {
-      subject: "Resources",
-      [country1.name]: country1.resources.score,
-      [country2.name]: country2.resources.score,
-    },
-  ] : [];
 
   const availableCountries1 = countries.filter(c => c.id !== country2?.id);
   const availableCountries2 = countries.filter(c => c.id !== country1?.id);
@@ -233,92 +198,16 @@ export default function Compare() {
             </Card>
 
             {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Bar Chart Comparison */}
-              <Card className="bg-card/80 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle>Component Scores</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={comparisonData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                        <XAxis 
-                          dataKey="name" 
-                          stroke="hsl(var(--muted-foreground))"
-                          fontSize={12}
-                        />
-                        <YAxis 
-                          stroke="hsl(var(--muted-foreground))"
-                          fontSize={12}
-                        />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: "hsl(var(--card))",
-                            border: "1px solid hsl(var(--border))",
-                            borderRadius: "8px"
-                          }}
-                        />
-                        <Legend />
-                        <Bar 
-                          dataKey={country1.name} 
-                          fill="hsl(var(--primary))"
-                          radius={[4, 4, 0, 0]}
-                        />
-                        <Bar 
-                          dataKey={country2.name} 
-                          fill="hsl(var(--accent))"
-                          radius={[4, 4, 0, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Radar Chart */}
-              <Card className="bg-card/80 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle>Power Profile Comparison</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart data={radarData}>
-                        <PolarGrid stroke="hsl(var(--border))" />
-                        <PolarAngleAxis 
-                          dataKey="subject" 
-                          tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
-                        />
-                        <PolarRadiusAxis 
-                          angle={90} 
-                          domain={[0, 100]}
-                          tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
-                        />
-                        <Radar
-                          name={country1.name}
-                          dataKey={country1.name}
-                          stroke="hsl(var(--primary))"
-                          fill="hsl(var(--primary))"
-                          fillOpacity={0.1}
-                          strokeWidth={2}
-                        />
-                        <Radar
-                          name={country2.name}
-                          dataKey={country2.name}
-                          stroke="hsl(var(--accent))"
-                          fill="hsl(var(--accent))"
-                          fillOpacity={0.1}
-                          strokeWidth={2}
-                        />
-                        <Legend />
-                      </RadarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <Card className="bg-card/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Visual Comparison</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Suspense fallback={<ChartLoader />}>
+                  <ComparisonCharts country1={country1} country2={country2} />
+                </Suspense>
+              </CardContent>
+            </Card>
 
             {/* Detailed Metrics Comparison */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">

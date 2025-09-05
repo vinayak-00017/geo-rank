@@ -1,6 +1,7 @@
 import { Navigation } from "@/components/ui/navigation";
 import { CountryCard } from "@/components/country-card";
-import { getCountriesByRank } from "@/data/countries";
+import { getCountriesWithCNP } from "@/data/countries";
+import { NuclearToggle } from "@/components/nuclear-toggle";
 import { Search, Filter, Crown, TrendingUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,8 @@ import { useState } from "react";
 
 export default function Rankings() {
   const [searchTerm, setSearchTerm] = useState("");
-  const countries = getCountriesByRank();
+  const [includeNuclear, setIncludeNuclear] = useState(true);
+  const countries = getCountriesWithCNP(includeNuclear);
   
   const filteredCountries = countries.filter(country =>
     country.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -23,10 +25,7 @@ export default function Rankings() {
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center space-x-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium mb-4">
-            <Crown className="w-4 h-4" />
-            <span>Global Power Rankings</span>
-          </div>
+         
           <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
             Composite National Power
           </h1>
@@ -57,7 +56,7 @@ export default function Rankings() {
                   {topCountry.name}
                 </h3>
                 <p className="text-primary-foreground/80">
-                  CNP Score: {topCountry.cnpScore.toFixed(1)}/100
+                  CNP Score: {topCountry.cnpScore.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -75,6 +74,10 @@ export default function Rankings() {
               className="pl-10 bg-card/80 border-border/50"
             />
           </div>
+          <NuclearToggle 
+            includeNuclear={includeNuclear} 
+            onToggle={setIncludeNuclear} 
+          />
           <Button variant="outline" className="flex items-center space-x-2">
             <Filter className="w-4 h-4" />
             <span>Filters</span>

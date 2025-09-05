@@ -1,24 +1,23 @@
 import { Navigation } from "@/components/ui/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { countries } from "@/data/countries";
+import { getCountriesWithCNP } from "@/data/countries";
+import { NuclearToggle } from "@/components/nuclear-toggle";
 import { Map, Globe, TrendingUp } from "lucide-react";
+import { useState } from "react";
 
 export default function WorldMap() {
+  const [includeNuclear, setIncludeNuclear] = useState(true);
+  const countries = getCountriesWithCNP(includeNuclear);
+  
   // Categorize countries by CNP strength
-  const strongPowers = countries.filter(c => c.cnpScore >= 80);
-  const mediumPowers = countries.filter(c => c.cnpScore >= 60 && c.cnpScore < 80);
-  const emergingPowers = countries.filter(c => c.cnpScore < 60);
-
-  const getCnpColor = (score: number) => {
-    if (score >= 80) return "bg-cnp-high";
-    if (score >= 60) return "bg-cnp-medium";
-    return "bg-cnp-low";
-  };
+  const strongPowers = countries.filter(c => c.cnpScore >= 20);
+  const mediumPowers = countries.filter(c => c.cnpScore >= 2 && c.cnpScore < 20);
+  const emergingPowers = countries.filter(c => c.cnpScore < 2);
 
   const getCnpBorderColor = (score: number) => {
-    if (score >= 80) return "border-cnp-high";
-    if (score >= 60) return "border-cnp-medium";
+    if (score >= 20) return "border-cnp-high";
+    if (score >= 2) return "border-cnp-medium";
     return "border-cnp-low";
   };
 
@@ -55,21 +54,21 @@ export default function WorldMap() {
                 <div className="w-4 h-4 bg-cnp-high rounded-full"></div>
                 <div>
                   <div className="font-semibold text-cnp-high">Superpowers</div>
-                  <div className="text-sm text-muted-foreground">CNP Score: 80-100</div>
+                  <div className="text-sm text-muted-foreground">CNP Score: 20+</div>
                 </div>
               </div>
               <div className="flex items-center space-x-3 p-3 bg-cnp-medium/10 border border-cnp-medium/20 rounded-lg">
                 <div className="w-4 h-4 bg-cnp-medium rounded-full"></div>
                 <div>
                   <div className="font-semibold text-cnp-medium">Major Powers</div>
-                  <div className="text-sm text-muted-foreground">CNP Score: 60-79</div>
+                  <div className="text-sm text-muted-foreground">CNP Score: 2-19</div>
                 </div>
               </div>
               <div className="flex items-center space-x-3 p-3 bg-cnp-low/10 border border-cnp-low/20 rounded-lg">
                 <div className="w-4 h-4 bg-cnp-low rounded-full"></div>
                 <div>
                   <div className="font-semibold text-cnp-low">Regional Powers</div>
-                  <div className="text-sm text-muted-foreground">CNP Score: Below 60</div>
+                  <div className="text-sm text-muted-foreground">CNP Score: Below 2</div>
                 </div>
               </div>
             </div>

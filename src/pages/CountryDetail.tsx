@@ -5,7 +5,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, DollarSign, Shield, Users, Cpu, Zap, TrendingUp, TrendingDown } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
+import { Suspense, lazy } from "react";
+
+// Lazy load the charts component
+const CountryCharts = lazy(() => import("@/components/country-charts").then(module => ({ default: module.CountryCharts })));
+
+// Chart loading fallback
+const ChartLoader = () => (
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="h-80 bg-muted/30 rounded-lg flex items-center justify-center">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary mb-2"></div>
+        <p className="text-sm text-muted-foreground">Loading charts...</p>
+      </div>
+    </div>
+    <div className="h-80 bg-muted/30 rounded-lg flex items-center justify-center">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary mb-2"></div>
+        <p className="text-sm text-muted-foreground">Loading charts...</p>
+      </div>
+    </div>
+  </div>
+);
 
 export default function CountryDetail() {
   const { id } = useParams<{ id: string }>();
@@ -28,23 +49,13 @@ export default function CountryDetail() {
     );
   }
 
-  const scoreData = [
-    { name: "Economy", score: country.economy.score, color: "#3b82f6" },
-    { name: "Military", score: country.military.score, color: "#ef4444" },
-    { name: "Population", score: country.population.score, color: "#22c55e" },
-    { name: "Technology", score: country.technology.score, color: "#a855f7" },
-    { name: "Resources", score: country.resources.score, color: "#f59e0b" },
-  ];
-
-  const radarData = [
-    { subject: "Economy", score: country.economy.score, fullMark: 100 },
-    { subject: "Military", score: country.military.score, fullMark: 100 },
-    { subject: "Population", score: country.population.score, fullMark: 100 },
-    { subject: "Technology", score: country.technology.score, fullMark: 100 },
-    { subject: "Resources", score: country.resources.score, fullMark: 100 },
-  ];
-
   const getCnpBadgeVariant = (score: number) => {
+    if (score >= 20) return "default";
+    if (score >= 2) return "secondary";
+    return "destructive";
+  };
+
+  const getComponentBadgeVariant = (score: number) => {
     if (score >= 80) return "default";
     if (score >= 60) return "secondary";
     return "destructive";
@@ -71,7 +82,7 @@ export default function CountryDetail() {
               <div className="flex items-center space-x-2 mt-1">
                 <Badge variant="outline">Rank #{country.rank}</Badge>
                 <Badge variant={getCnpBadgeVariant(country.cnpScore)}>
-                  CNP: {country.cnpScore.toFixed(1)}/100
+                  CNP: {country.cnpScore.toFixed(2)}
                 </Badge>
               </div>
             </div>
@@ -169,77 +180,16 @@ export default function CountryDetail() {
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Bar Chart */}
-          <Card className="bg-card/80 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>CNP Component Scores</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={scoreData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="name" 
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                    />
-                    <YAxis 
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                    />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
-                        borderRadius: "8px"
-                      }}
-                    />
-                    <Bar 
-                      dataKey="score" 
-                      fill="hsl(var(--primary))"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Radar Chart */}
-          <Card className="bg-card/80 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>Power Profile Radar</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart data={radarData}>
-                    <PolarGrid stroke="hsl(var(--border))" />
-                    <PolarAngleAxis 
-                      dataKey="subject" 
-                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
-                    />
-                    <PolarRadiusAxis 
-                      angle={90} 
-                      domain={[0, 100]}
-                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
-                    />
-                    <Radar
-                      name="Score"
-                      dataKey="score"
-                      stroke="hsl(var(--primary))"
-                      fill="hsl(var(--primary))"
-                      fillOpacity={0.1}
-                      strokeWidth={2}
-                    />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="bg-card/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle>Visual Analysis</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Suspense fallback={<ChartLoader />}>
+              <CountryCharts country={country} />
+            </Suspense>
+          </CardContent>
+        </Card>
 
         {/* Detailed Breakdown */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -258,7 +208,7 @@ export default function CountryDetail() {
               </div>
               <div className="flex justify-between items-center p-3 bg-secondary/20 rounded-lg">
                 <span className="text-muted-foreground">Economy Score</span>
-                <Badge variant={getCnpBadgeVariant(country.economy.score)}>
+                <Badge variant={getComponentBadgeVariant(country.economy.score)}>
                   {country.economy.score}/100
                 </Badge>
               </div>
@@ -280,7 +230,7 @@ export default function CountryDetail() {
               </div>
               <div className="flex justify-between items-center p-3 bg-secondary/20 rounded-lg">
                 <span className="text-muted-foreground">Military Score</span>
-                <Badge variant={getCnpBadgeVariant(country.military.score)}>
+                <Badge variant={getComponentBadgeVariant(country.military.score)}>
                   {country.military.score}/100
                 </Badge>
               </div>
